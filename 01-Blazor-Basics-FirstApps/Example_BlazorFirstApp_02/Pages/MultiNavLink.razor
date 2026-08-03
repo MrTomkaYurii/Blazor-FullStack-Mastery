@@ -1,0 +1,17 @@
+﻿<a href="https://www.hosting.com" target="_blank">
+    @if (Enabled)
+        @("Go to Google")
+    else
+        @("Go to Hosting")
+
+</a>
+
+@code {
+    private bool Enabled { get; set; } = true;
+
+    public void SetEnabled(bool enabled)
+    {
+        Enabled = enabled;
+        StateHasChanged();
+    }
+}

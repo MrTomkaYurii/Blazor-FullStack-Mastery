@@ -1,0 +1,5 @@
+1. Creating First Application in Blazor from scratch
+https://www.yogihosting.com/blazor-first-application/
+
+2. Blazor Events and Data Bindings
+https://www.yogihosting.com/blazor-events-data-bindings/

@@ -1,0 +1,19 @@
+﻿@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime
+
+@page "/Exampley"
+
+<div class="bg-info text-white" @ref="divElement" >1</div>
+
+@code {
+    private ElementReference divElement;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await Task.Delay(1000);
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("setElementText", divElement, "Text after render");
+        }
+    }
+}

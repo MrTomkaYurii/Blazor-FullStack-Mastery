@@ -1,0 +1,75 @@
+@page "/virtualize"
+@inject IToastService ToastService
+
+<PageTitle>Virtualize Demo</PageTitle>
+
+<h3>⚡ Віртуалізація списків (&lt;Virtualize&gt;)</h3>
+<p class="text-muted">
+    У пам'яті згенеровано <strong>10 000 користувачів</strong>. Стандартний компонент Blazor 
+    <code>&lt;Virtualize&gt;</code> рендерить у DOM тільки ті ~20 рядків, які видно на екрані, 
+    забезпечуючи ідеальну плавність прокрутки 60 FPS.
+</p>
+
+<div class="mb-3 d-flex gap-2 align-items-center">
+    <input class="form-control" style="max-width: 300px;" placeholder="Пошук за прізвищем або містом..." 
+           @bind="_search" @bind:event="oninput" />
+    <span class="badge bg-primary fs-6">Знайдено: @FilteredUsers.Count() / @_allUsers.Count</span>
+</div>
+
+<div class="border rounded shadow-sm bg-white" style="height: 480px; overflow-y: auto;">
+    <table class="table table-striped table-hover mb-0">
+        <thead class="table-dark sticky-top">
+            <tr>
+                <th style="width: 80px;">ID</th>
+                <th>Ім'я та Прізвище</th>
+                <th>Email</th>
+                <th>Місто</th>
+                <th>Баланс</th>
+            </tr>
+        </thead>
+        <tbody>
+            <Virtualize Items="FilteredUsers.ToList()" Context="user">
+                <tr>
+                    <td>@user.Id</td>
+                    <td>@user.FullName</td>
+                    <td>@user.Email</td>
+                    <td>@user.City</td>
+                    <td class="fw-bold text-success">@user.Balance.ToString("C2")</td>
+                </tr>
+            </Virtualize>
+        </tbody>
+    </table>
+</div>
+
+@code {
+    private record UserItem(int Id, string FullName, string Email, string City, decimal Balance);
+    private readonly List<UserItem> _allUsers = new();
+    private string _search = "";
+
+    private IEnumerable<UserItem> FilteredUsers => string.IsNullOrWhiteSpace(_search)
+        ? _allUsers
+        : _allUsers.Where(u => u.FullName.Contains(_search, StringComparison.OrdinalIgnoreCase) 
+                            || u.City.Contains(_search, StringComparison.OrdinalIgnoreCase));
+
+    protected override void OnInitialized()
+    {
+        var cities = new[] { "Київ", "Львів", "Одеса", "Чернівці", "Харків", "Дніпро" };
+        var firstNames = new[] { "Тарас", "Олена", "Андрій", "Оксана", "Юрій", "Ірина", "Максим", "Софія" };
+        var lastNames = new[] { "Шевченко", "Коваленко", "Мельник", "Бондаренко", "Ткаченко", "Кравченко" };
+
+        var rand = new Random(42);
+        for (int i = 1; i <= 10000; i++)
+        {
+            var fn = firstNames[rand.Next(firstNames.Length)];
+            var ln = lastNames[rand.Next(lastNames.Length)];
+            var city = cities[rand.Next(cities.Length)];
+            _allUsers.Add(new UserItem(
+                i,
+                $"{fn} {ln}",
+                $"user{i}@example.ua",
+                city,
+                rand.Next(100, 50000)
+            ));
+        }
+    }
+}

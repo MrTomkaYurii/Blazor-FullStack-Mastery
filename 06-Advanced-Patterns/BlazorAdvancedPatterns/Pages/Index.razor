@@ -1,0 +1,76 @@
+@page "/"
+
+<PageTitle>Blazor Advanced Patterns (.NET 10)</PageTitle>
+
+<div class="container-fluid">
+    <div class="p-4 mb-4 bg-white rounded-3 shadow-sm border">
+        <h1 class="display-5 fw-bold text-primary">Blazor Advanced Patterns (.NET 10)</h1>
+        <p class="lead text-muted">
+            Інтерактивний навчальний полігон сучасних патернів архітектури Blazor:
+            реактивне керування станом, робота з LocalStorage, оптимізація віртуалізації списків,
+            спливаючі реактивні сповіщення та рольовий доступ.
+        </p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">🔄 AppState Pattern</h5>
+                    <p class="card-text text-secondary">
+                        Синхронізація стану між незалежними компонентами через Scoped сервіс та подію <code>event Action OnChange</code>.
+                    </p>
+                    <a href="state" class="btn btn-outline-primary btn-sm">Переглянути демо</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title text-success">🌙 LocalStorage Theme</h5>
+                    <p class="card-text text-secondary">
+                        Збереження та зчитування налаштувань теми (Dark/Light) у браузерному LocalStorage через чистий JS Interop.
+                    </p>
+                    <a href="theme" class="btn btn-outline-success btn-sm">Переглянути демо</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title text-warning">⚡ Virtualization</h5>
+                    <p class="card-text text-secondary">
+                        Візуалізація 10 000+ елементів через компонент <code>&lt;Virtualize&gt;</code> без навантаження на DOM.
+                    </p>
+                    <a href="virtualize" class="btn btn-outline-warning btn-sm">Переглянути демо</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title text-info">🔔 Toast Notifications</h5>
+                    <p class="card-text text-secondary">
+                        Власна реактивна система Toast-сповіщень (Success, Info, Warning, Error) з таймером автозакриття.
+                    </p>
+                    <a href="toasts" class="btn btn-outline-info btn-sm">Переглянути демо</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title text-danger">🛡️ Role-Based Auth</h5>
+                    <p class="card-text text-secondary">
+                        Рольова авторизація за допомогою <code>&lt;AuthorizeView Roles="Admin"&gt;</code> та кастомного провайдера.
+                    </p>
+                    <a href="auth" class="btn btn-outline-danger btn-sm">Переглянути демо</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

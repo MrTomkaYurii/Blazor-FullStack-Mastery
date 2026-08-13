@@ -1,0 +1,28 @@
+@page "/toasts"
+@inject IToastService ToastService
+
+<PageTitle>Toast Notifications Demo</PageTitle>
+
+<h3>🔔 Спливаючі сповіщення (Toast Notification Service)</h3>
+<p class="text-muted">
+    Реактивна система спливаючих сповіщень: компоненти викликають методи сервісу <code>IToastService</code>,
+    а контейнер <code>&lt;ToastContainer&gt;</code> автоматично показує та видаляє картки через 3.5 секунди.
+</p>
+
+<div class="card p-4 shadow-sm bg-white">
+    <h5>Створити сповіщення:</h5>
+    <div class="d-flex flex-wrap gap-2 mt-3">
+        <button class="btn btn-success" @onclick='() => ToastService.ShowSuccess("Операцію успішно виконано!")'>
+            ✅ Успіх (Success)
+        </button>
+        <button class="btn btn-info text-white" @onclick='() => ToastService.ShowInfo("Нове повідомлення в системі")'>
+            ℹ️ Інформація (Info)
+        </button>
+        <button class="btn btn-warning" @onclick='() => ToastService.ShowWarning("Увага: строк сесії закінчується")'>
+            ⚠️ Попередження (Warning)
+        </button>
+        <button class="btn btn-danger" @onclick='() => ToastService.ShowError("Помилка підключення до сервера!")'>
+            ❌ Помилка (Error)
+        </button>
+    </div>
+</div>

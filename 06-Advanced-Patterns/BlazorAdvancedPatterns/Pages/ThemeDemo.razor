@@ -1,0 +1,59 @@
+@page "/theme"
+@inject ILocalStorageService Storage
+@inject IToastService ToastService
+
+<PageTitle>LocalStorage Theme Demo</PageTitle>
+
+<h3>🌙 Збереження налаштувань у LocalStorage</h3>
+<p class="text-muted">
+    Збереження вибору теми (Dark / Light) у браузерному сховищі через чистий <code>IJSRuntime</code> без сторонніх бібліотек.
+</p>
+
+<div class="card p-4 shadow-sm @(_isDarkMode ? "bg-dark text-white" : "bg-white text-dark")">
+    <h5>Поточний режим: <strong>@(_isDarkMode ? "Темна тема 🌙" : "Світла тема ☀️")</strong></h5>
+    <p>
+        Значення зберігається в ключі LocalStorage: <code>app_theme_dark_mode</code>.
+        Оновіть сторінку (F5) — стан збережеться!
+    </p>
+
+    <div class="d-flex gap-2">
+        <button class="btn @(_isDarkMode ? "btn-light" : "btn-dark")" @onclick="ToggleTheme">
+            Перемкнути тему
+        </button>
+        <button class="btn btn-outline-danger" @onclick="ResetTheme">
+            Скинути LocalStorage
+        </button>
+    </div>
+</div>
+
+@code {
+    private bool _isDarkMode = false;
+    private const string ThemeKey = "app_theme_dark_mode";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var saved = await Storage.GetItemAsync<bool?>(ThemeKey);
+            if (saved.HasValue && saved.Value != _isDarkMode)
+            {
+                _isDarkMode = saved.Value;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task ToggleTheme()
+    {
+        _isDarkMode = !_isDarkMode;
+        await Storage.SetItemAsync(ThemeKey, _isDarkMode);
+        ToastService.ShowSuccess($"Тему перемкнуто на: {(_isDarkMode ? "Темну" : "Світлу")}");
+    }
+
+    private async Task ResetTheme()
+    {
+        await Storage.RemoveItemAsync(ThemeKey);
+        _isDarkMode = false;
+        ToastService.ShowWarning("LocalStorage скинуто до початкових значень");
+    }
+}

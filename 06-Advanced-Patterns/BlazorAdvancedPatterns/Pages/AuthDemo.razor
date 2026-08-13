@@ -1,0 +1,75 @@
+@page "/auth"
+@inject AuthenticationStateProvider AuthProvider
+@inject IToastService ToastService
+
+<PageTitle>Role-Based Auth Demo</PageTitle>
+
+<h3>🛡️ Рольова авторизація в Blazor (&lt;AuthorizeView&gt;)</h3>
+<p class="text-muted">
+    Демонстрація перемикання ролей у реальному часі через <code>CustomAuthenticationStateProvider</code>.
+    Залежно від активної ролі (Гість, Користувач, Адміністратор) Blazor показує або приховує захищені блоки UI.
+</p>
+
+<div class="card p-4 shadow-sm mb-4">
+    <h5>Симуляція ролі користувача:</h5>
+    <div class="btn-group mt-2" role="group">
+        <button class="btn btn-outline-secondary" @onclick='() => SetRole("Гість", "")'>
+            👤 Гість (Не авторизований)
+        </button>
+        <button class="btn btn-outline-primary" @onclick='() => SetRole("Олена (User)", "User")'>
+            👥 Звичайний користувач (User)
+        </button>
+        <button class="btn btn-outline-danger" @onclick='() => SetRole("Юрій (Admin)", "Admin")'>
+            ⚡ Адміністратор (Admin)
+        </button>
+    </div>
+</div>
+
+<div class="card p-4 shadow-sm bg-light">
+    <h5>Результат рендерингу &lt;AuthorizeView&gt;:</h5>
+
+    <AuthorizeView>
+        <Authorized>
+            <div class="alert alert-success mt-2">
+                <strong>Ви авторизовані як:</strong> @context.User.Identity?.Name
+            </div>
+
+            <AuthorizeView Roles="Admin" Context="adminContext">
+                <Authorized>
+                    <div class="alert alert-danger">
+                        👑 <strong>Панель Адміністратора:</strong> Вам доступні кнопки видалення бази, експорту фінансових звітів та керування користувачами.
+                        <div class="mt-2">
+                            <button class="btn btn-danger btn-sm" @onclick='() => ToastService.ShowError("Адмін виконав системне скидання")'>Видалити логи</button>
+                            <button class="btn btn-warning btn-sm" @onclick='() => ToastService.ShowSuccess("Фінансовий звіт експортовано")'>Експорт фінансів</button>
+                        </div>
+                    </div>
+                </Authorized>
+                <NotAuthorized>
+                    <p class="text-muted"><em>Панель адміністратора прихована (недостатньо прав).</em></p>
+                </NotAuthorized>
+            </AuthorizeView>
+        </Authorized>
+        <NotAuthorized>
+            <div class="alert alert-secondary mt-2">
+                🔒 Ви перебуваєте в системі як <strong>Гість</strong>. Увійдіть під обліковим записом для доступу до функцій.
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
+</div>
+
+@code {
+    private void SetRole(string name, string role)
+    {
+        var provider = (CustomAuthenticationStateProvider)AuthProvider;
+        if (string.IsNullOrEmpty(role))
+        {
+            provider.SignOut();
+            ToastService.ShowInfo("Вихід із системи (режим Гостя)");
+        }
+        else
+        {
+            provider.AuthenticateUser(name, role);
+            ToastService.ShowSuccess($"Вхід успішний: {name} (роль: {role})");
+        }
+    }
+}

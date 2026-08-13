@@ -1,0 +1,64 @@
+@inject IToastService ToastService
+@implements IDisposable
+
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 1080;">
+    @foreach (var toast in _toasts)
+    {
+        <div class="toast show mb-2 shadow text-white bg-@GetBadgeClass(toast.Level)" role="alert">
+            <div class="toast-header bg-dark text-white">
+                <strong class="me-auto">@toast.Level.ToString()</strong>
+                <small>@toast.Timestamp.ToString("HH:mm:ss")</small>
+                <button type="button" class="btn-close btn-close-white" @onclick="() => RemoveToast(toast.Id)"></button>
+            </div>
+            <div class="toast-body">
+                @toast.Text
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private readonly List<ToastMessage> _toasts = new();
+
+    protected override void OnInitialized()
+    {
+        ToastService.OnShow += AddToast;
+    }
+
+    private void AddToast(ToastMessage toast)
+    {
+        InvokeAsync(() =>
+        {
+            _toasts.Add(toast);
+            StateHasChanged();
+
+            // Auto dismiss after 3.5 seconds
+            _ = Task.Delay(3500).ContinueWith(_ =>
+            {
+                InvokeAsync(() =>
+                {
+                    _toasts.RemoveAll(t => t.Id == toast.Id);
+                    StateHasChanged();
+                });
+            });
+        });
+    }
+
+    private void RemoveToast(Guid id)
+    {
+        _toasts.RemoveAll(t => t.Id == id);
+    }
+
+    private string GetBadgeClass(ToastLevel level) => level switch
+    {
+        ToastLevel.Success => "success",
+        ToastLevel.Warning => "warning text-dark",
+        ToastLevel.Error => "danger",
+        _ => "info"
+    };
+
+    public void Dispose()
+    {
+        ToastService.OnShow -= AddToast;
+    }
+}

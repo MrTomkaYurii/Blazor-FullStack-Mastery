@@ -1,0 +1,85 @@
+@page "/state"
+@inject IAppStateService StateService
+@inject IToastService ToastService
+@implements IDisposable
+
+<PageTitle>AppState Demo</PageTitle>
+
+<h3>🔄 Патерн AppState (Керування спільним станом)</h3>
+<p class="text-muted">
+    Ці два блоки симулюють незалежні компоненти, які спілкуються через сервіс <code>IAppStateService</code> без передачі параметрів по ланцюжку.
+</p>
+
+<div class="row g-4 mt-2">
+    <!-- Component A: Producer -->
+    <div class="col-md-6">
+        <div class="card p-3 shadow-sm">
+            <h5 class="card-title text-primary">Компонент А (Зміна стану)</h5>
+            <p>Лічильник кліків: <strong>@StateService.Counter</strong></p>
+            <div class="d-flex gap-2 mb-3">
+                <button class="btn btn-primary" @onclick="HandleIncrement">Збільшити лічильник</button>
+            </div>
+
+            <div class="input-group">
+                <input class="form-control" placeholder="Назва товару для кошика..." @bind="_newItemName" />
+                <button class="btn btn-success" @onclick="HandleAddItem">Додати в кошик</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Component B: Consumer -->
+    <div class="col-md-6">
+        <div class="card p-3 shadow-sm bg-light">
+            <h5 class="card-title text-success">Компонент Б (Реактивне відображення)</h5>
+            <p>Актуальне значення лічильника: <span class="badge bg-primary fs-6">@StateService.Counter</span></p>
+            <h6>Товарів у кошику (@StateService.CartItems.Count):</h6>
+            @if (!StateService.CartItems.Any())
+            {
+                <p class="text-muted fst-italic">Кошик порожній</p>
+            }
+            else
+            {
+                <ul class="list-group mb-2">
+                    @foreach (var item in StateService.CartItems)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            @item
+                            <span class="badge bg-secondary rounded-pill">В кошику</span>
+                        </li>
+                    }
+                </ul>
+                <button class="btn btn-outline-danger btn-sm" @onclick="StateService.ClearCart">Очистити кошик</button>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private string _newItemName = "";
+
+    protected override void OnInitialized()
+    {
+        StateService.OnChange += StateHasChanged;
+    }
+
+    private void HandleIncrement()
+    {
+        StateService.IncrementCounter();
+        ToastService.ShowInfo($"Лічильник збільшено до {StateService.Counter}");
+    }
+
+    private void HandleAddItem()
+    {
+        if (!string.IsNullOrWhiteSpace(_newItemName))
+        {
+            StateService.AddCartItem(_newItemName);
+            ToastService.ShowSuccess($"Додано в кошик: {_newItemName}");
+            _newItemName = "";
+        }
+    }
+
+    public void Dispose()
+    {
+        StateService.OnChange -= StateHasChanged;
+    }
+}
